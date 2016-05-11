@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         adapter.notifyDataSetChanged();
-
-        clearData();
     }
 
     @Override
@@ -69,21 +67,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.statistic:
-                clearData();
-
                 startActivity(new Intent(this,StatisticActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void clearData(){
-        String oldLog = log.getText().toString();
-        isRealm = false;
-        deleteTest(null);
-        isRealm = true;
-        deleteTest(null);
-        log.setText(oldLog);
     }
 
     public void refreshUI(){
