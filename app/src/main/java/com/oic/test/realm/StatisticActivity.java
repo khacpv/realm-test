@@ -79,7 +79,7 @@ public class StatisticActivity extends AppCompatActivity {
         mChart.setDrawBarShadow(false);
         mChart.setDrawValueAboveBar(true);
         mChart.setDescription("");
-        mChart.setPinchZoom(true);
+        mChart.setPinchZoom(false);
         mChart.setDrawGridBackground(false);
         mTf = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 
