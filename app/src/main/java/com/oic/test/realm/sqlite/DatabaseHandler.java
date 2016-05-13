@@ -32,8 +32,14 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
     long endTime = System.currentTimeMillis();
 
+    public static boolean hasTransaction = false;
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public void setRunWithTransaction(boolean hasTransaction){
+        this.hasTransaction = hasTransaction;
     }
 
     @Override
@@ -50,16 +56,31 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     }
 
     @Override
-    public void beginTransaction() {
+    public void openDatabase() {
         startTime = System.currentTimeMillis();
         Log.e("TAG","sqlite start");
         db = this.getWritableDatabase();
     }
 
     @Override
-    public void closeTransaction() {
+    public void closeDatabase() {
         db.close();
         endTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void beginTransaction() {
+        if(hasTransaction) {
+            db.beginTransaction();
+        }
+    }
+
+    @Override
+    public void closeTransaction() {
+        if(hasTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     public String printLog(String extraInfo){

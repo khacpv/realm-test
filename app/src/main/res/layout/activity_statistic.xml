@@ -4,8 +4,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <RadioGroup
+        android:id="@+id/runOption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/noTrans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="setRunMode"
+            android:text="No Transaction"/>
+
+        <RadioButton
+            android:id="@+id/withTrans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:onClick="setRunMode"
+            android:checked="false"
+            android:text="With Transaction"/>
+    </RadioGroup>
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart1"
+        android:layout_below="@id/runOption"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/title" />

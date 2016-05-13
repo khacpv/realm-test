@@ -22,7 +22,18 @@ public class RealmHandler implements IRealmHandler{
 
     long endTime = System.currentTimeMillis();
 
+    Context context;
+
     public RealmHandler(Context context){
+        this.context = context;
+        initRealm();
+    }
+
+    public Realm getRealm(){
+        return realm;
+    }
+
+    public void initRealm(){
         RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
                 .name("myrealm.realm")
                 .schemaVersion(1)
@@ -33,7 +44,12 @@ public class RealmHandler implements IRealmHandler{
 
     @Override
     public void beginTransaction() {
-        realm.beginTransaction();
+        try {
+            realm.beginTransaction();
+        }catch (IllegalStateException e){
+            initRealm();
+            realm.beginTransaction();
+        }
         startTime = System.currentTimeMillis();
         Log.e("TAG","realm start");
     }

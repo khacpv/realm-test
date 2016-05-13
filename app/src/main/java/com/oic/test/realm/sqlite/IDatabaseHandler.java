@@ -11,6 +11,10 @@ import java.util.List;
  */
 public interface IDatabaseHandler {
 
+    void openDatabase();
+
+    void closeDatabase();
+
     void beginTransaction();
 
     void closeTransaction();

@@ -15,6 +15,8 @@ import com.oic.test.realm.sqlite.DatabaseHandler;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+
 /**
  * Created by FRAMGIA\pham.van.khac on 11/05/2016.
  */
@@ -36,12 +38,18 @@ public class TestManager {
         realm = new RealmHandler(context);
     }
 
+    public void useSQLiteTransaction(boolean used){
+        sqlite.setRunWithTransaction(used);
+    }
+
     public void startSelect(){
         // select
         {
+            sqlite.openDatabase();
             sqlite.beginTransaction();
             sqlite.select();
             sqlite.closeTransaction();
+            sqlite.closeDatabase();
             selectSql = sqlite.getDuration();
         }
 
@@ -57,11 +65,13 @@ public class TestManager {
     public void startInsert(){
         // insert
         {
+            sqlite.openDatabase();
             sqlite.beginTransaction();
             for (Record record : initRecords()) {
                 sqlite.insert(record);
             }
             sqlite.closeTransaction();
+            sqlite.closeDatabase();
             insertSql = sqlite.getDuration();
         }
 
@@ -70,9 +80,10 @@ public class TestManager {
             realm.beginTransaction();
             List<Record> data = initRecords();
             for (Record record : data) {
-                realm.insert(record);
+                TestManager.this.realm.insert(record);
             }
             realm.closeTransaction();
+            insertRealm = realm.getDuration();
             insertRealm = realm.getDuration();
         }
     }
@@ -80,6 +91,7 @@ public class TestManager {
     public void startUpdate(){
         // update
         {
+            sqlite.openDatabase();
             sqlite.beginTransaction();
             List<Record> data = initRecords();
             for (Record record : data) {
@@ -87,6 +99,7 @@ public class TestManager {
                 sqlite.update(record);
             }
             sqlite.closeTransaction();
+            sqlite.closeDatabase();
             updateSql = sqlite.getDuration();
         }
 
@@ -106,11 +119,13 @@ public class TestManager {
     public void startDelete(){
         // delete
         {
+            sqlite.openDatabase();
             sqlite.beginTransaction();
             for (Record record : initRecords()) {
                 sqlite.delete(record);
             }
             sqlite.closeTransaction();
+            sqlite.closeDatabase();
             deleteSql = sqlite.getDuration();
         }
 
@@ -131,8 +146,12 @@ public class TestManager {
     }
 
     public static List<Record> initRecords(){
+        int totalItem = 1000;
+        if(DatabaseHandler.hasTransaction){
+            totalItem = 10000;
+        }
         List<Record> records = new ArrayList<>();
-        for(int i=0;i<1000;i++){
+        for(int i=0;i<totalItem;i++){
             records.add(new Record(i,String.format("record item %d", i)));
         }
         return records;

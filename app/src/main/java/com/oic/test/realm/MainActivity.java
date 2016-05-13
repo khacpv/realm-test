@@ -16,6 +16,7 @@ import com.oic.test.realm.adapter.RecordAdapter;
 import com.oic.test.realm.model.Record;
 import com.oic.test.realm.realm.RealmHandler;
 import com.oic.test.realm.sqlite.DatabaseHandler;
+import com.oic.test.realm.utils.TestManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,10 +87,11 @@ public class MainActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
             return;
         }
-
+        sqlite.openDatabase();
         sqlite.beginTransaction();
         List<Record> result = sqlite.select();
         sqlite.closeTransaction();
+        sqlite.closeDatabase();
 
         records.clear();
         for(Record record: result){
@@ -114,9 +116,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        sqlite.openDatabase();
         sqlite.beginTransaction();
         List<Record> result = sqlite.select();
         sqlite.closeTransaction();
+        sqlite.closeDatabase();
         log.setText(sqlite.printLog("select "+result.size()+" items"));
 
         records.clear();
@@ -130,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("Tag","Insert records");
         if(isRealm){
             realm.beginTransaction();
-            List<Record> data = initRecords();
+            List<Record> data = TestManager.initRecords();
             for(Record record: data){
                 realm.insert(record);
             }
@@ -140,12 +144,14 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        sqlite.openDatabase();
         sqlite.beginTransaction();
-        List<Record> data = initRecords();
+        List<Record> data = TestManager.initRecords();
         for(Record record: data){
             sqlite.insert(record);
         }
         sqlite.closeTransaction();
+        sqlite.closeDatabase();
         log.setText(sqlite.printLog("insert "+data.size()+" items"));
         refreshUI();
     }
@@ -154,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("Tag","Update records");
         if(isRealm){
             realm.beginTransaction();
-            List<Record> data = initRecords();
+            List<Record> data = TestManager.initRecords();
             for(Record record: data){
                 record.value += "1";
                 realm.update(record);
@@ -165,13 +171,15 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        sqlite.openDatabase();
         sqlite.beginTransaction();
-        List<Record> data = initRecords();
+        List<Record> data = TestManager.initRecords();
         for(Record record: data){
             record.value += "1";
             sqlite.update(record);
         }
         sqlite.closeTransaction();
+        sqlite.closeDatabase();
         log.setText(sqlite.printLog("update "+data.size()+" items"));
         refreshUI();
     }
@@ -180,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("Tag","Delete records");
         if(isRealm){
             realm.beginTransaction();
-            List<Record> data = initRecords();
+            List<Record> data = TestManager.initRecords();
             for(Record record: data){
                 realm.delete(record);
             }
@@ -190,24 +198,18 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        sqlite.openDatabase();
         sqlite.beginTransaction();
-        for(Record record: initRecords()){
+        for(Record record: TestManager.initRecords()){
             sqlite.delete(record);
         }
         sqlite.closeTransaction();
+        sqlite.closeDatabase();
         log.setText(sqlite.printLog("delete "+records.size()+" items"));
         refreshUI();
     }
 
     public void setRunMode(View button){
         isRealm = button.getId() == R.id.isRealm;
-    }
-
-    public static List<Record> initRecords(){
-        List<Record> records = new ArrayList<>();
-        for(int i=0;i<1000;i++){
-            records.add(new Record(i,String.format("record item %d", i)));
-        }
-        return records;
     }
 }

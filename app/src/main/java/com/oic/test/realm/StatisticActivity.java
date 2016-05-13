@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +23,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.oic.test.realm.sqlite.DatabaseHandler;
 import com.oic.test.realm.utils.MyYAxisValueFormatter;
 import com.oic.test.realm.utils.TestManager;
 
@@ -108,6 +109,10 @@ public class StatisticActivity extends AppCompatActivity {
         statisctic();
     }
 
+    public void setRunMode(View button){
+        DatabaseHandler.hasTransaction = button.getId() == R.id.withTrans;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         new MenuInflater(this).inflate(R.menu.statistic_menu,menu);
@@ -144,6 +149,8 @@ public class StatisticActivity extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... params) {
                 testManager = new TestManager(StatisticActivity.this);
+                testManager.useSQLiteTransaction(DatabaseHandler.hasTransaction);
+
                 testManager.startInsert();
                 publishProgress();
                 testManager.startSelect();
