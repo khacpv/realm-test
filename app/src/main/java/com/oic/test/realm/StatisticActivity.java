@@ -172,7 +172,11 @@ public class StatisticActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 updateData();
                 isCalculating = false;
-                title.setText(String.format("Realm fasters ~%s times SQlite", testManager.getFaster()));
+                if(testManager.getFaster() ==0 ){
+                    title.setText("Realm doesn't faster SQLite in this case");
+                }else {
+                    title.setText(String.format("Realm fasters ~%s times SQlite", testManager.getFaster()));
+                }
             }
 
             void updateData(){

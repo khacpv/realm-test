@@ -12,15 +12,20 @@ import com.oic.test.realm.model.Record;
 import com.oic.test.realm.realm.RealmHandler;
 import com.oic.test.realm.sqlite.DatabaseHandler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.internal.SharedGroup;
+import io.realm.internal.Table;
+import io.realm.internal.WriteTransaction;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 11/05/2016.
  */
 public class TestManager {
+    Context context;
     DatabaseHandler sqlite;
     RealmHandler realm;
 
@@ -34,6 +39,7 @@ public class TestManager {
     public long deleteRealm;
 
     public TestManager(Context context){
+        this.context = context;
         sqlite = new DatabaseHandler(context);
         realm = new RealmHandler(context);
     }
@@ -83,7 +89,7 @@ public class TestManager {
                 TestManager.this.realm.insert(record);
             }
             realm.closeTransaction();
-            insertRealm = realm.getDuration();
+
             insertRealm = realm.getDuration();
         }
     }
