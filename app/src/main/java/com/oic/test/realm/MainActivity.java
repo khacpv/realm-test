@@ -209,6 +209,12 @@ public class MainActivity extends AppCompatActivity {
         refreshUI();
     }
 
+    @Override
+    protected void onDestroy() {
+        realm.onDestroy();
+        super.onDestroy();
+    }
+
     public void setRunMode(View button){
         isRealm = button.getId() == R.id.isRealm;
     }

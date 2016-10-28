@@ -20,4 +20,6 @@ public interface IRealmHandler {
     int update(Record record);
 
     void delete(Record record);
+
+    void onDestroy();
 }

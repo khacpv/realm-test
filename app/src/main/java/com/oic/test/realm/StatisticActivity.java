@@ -10,10 +10,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -26,7 +24,6 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.oic.test.realm.sqlite.DatabaseHandler;
 import com.oic.test.realm.utils.MyYAxisValueFormatter;
 import com.oic.test.realm.utils.TestManager;
-
 import java.util.ArrayList;
 
 /**
@@ -57,7 +54,7 @@ public class StatisticActivity extends AppCompatActivity {
     };
 
     protected String[] optionTests = new String[]{
-            "SELECT", "", "INSERT","", "UPDATE","", "DELETE", ""
+            "SELECT", "", "INSERT", "", "UPDATE", "", "DELETE", ""
     };
 
     YAxisValueFormatter custom = new MyYAxisValueFormatter();
@@ -159,6 +156,8 @@ public class StatisticActivity extends AppCompatActivity {
                 publishProgress();
                 testManager.startDelete();
                 publishProgress();
+
+                testManager.onDestroy();
                 return null;
             }
 
@@ -172,10 +171,14 @@ public class StatisticActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 updateData();
                 isCalculating = false;
-                if(testManager.getFaster() ==0 ){
-                    title.setText("Realm doesn't faster SQLite in this case");
+                String item = DatabaseHandler.hasTransaction ? "with "
+                        + TestManager.TEST_WITH_TRANS
+                        + " records" : "with " + TestManager.TEST_NO_TRANS + " records";
+                if (testManager.getFaster() <= 0) {
+                    title.setText("Realm doesn't faster SQLite in this case \n" + item);
                 }else {
-                    title.setText(String.format("Realm fasters ~%s times SQlite", testManager.getFaster()));
+                    title.setText(String.format("Realm fasters ~%s times SQlite\n%s",
+                            testManager.getFasterStr(), item));
                 }
             }
 
@@ -198,10 +201,13 @@ public class StatisticActivity extends AppCompatActivity {
 
         yVals1.add(new BarEntry(datas[ID_SELECT_SQLITE],ID_SELECT_SQLITE));
         yVals1.add(new BarEntry(datas[ID_SELECT_REALM],ID_SELECT_REALM));
+
         yVals1.add(new BarEntry(datas[ID_INSERT_SQLITE],ID_INSERT_SQLITE));
         yVals1.add(new BarEntry(datas[ID_INSERT_REALM],ID_INSERT_REALM));
+
         yVals1.add(new BarEntry(datas[ID_UPDATE_SQLITE],ID_UPDATE_SQLITE));
         yVals1.add(new BarEntry(datas[ID_UPDATE_REALM],ID_UPDATE_REALM));
+
         yVals1.add(new BarEntry(datas[ID_DELETE_SQLITE],ID_DELETE_SQLITE));
         yVals1.add(new BarEntry(datas[ID_DELETE_REALM],ID_DELETE_REALM));
 

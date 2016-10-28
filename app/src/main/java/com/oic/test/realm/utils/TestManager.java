@@ -1,33 +1,24 @@
 package com.oic.test.realm.utils;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.oic.test.realm.R;
-import com.oic.test.realm.adapter.RecordAdapter;
 import com.oic.test.realm.model.Record;
 import com.oic.test.realm.realm.RealmHandler;
 import com.oic.test.realm.sqlite.DatabaseHandler;
-
-import java.io.File;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.internal.SharedGroup;
-import io.realm.internal.Table;
-import io.realm.internal.WriteTransaction;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 11/05/2016.
  */
 public class TestManager {
-    Context context;
-    DatabaseHandler sqlite;
-    RealmHandler realm;
+
+    public static final long TEST_NO_TRANS = 1000;
+
+    public static final long TEST_WITH_TRANS = 10000;
+    private DatabaseHandler sqlite;
+    private RealmHandler realm;
 
     public long insertSql;
     public long insertRealm;
@@ -39,7 +30,6 @@ public class TestManager {
     public long deleteRealm;
 
     public TestManager(Context context){
-        this.context = context;
         sqlite = new DatabaseHandler(context);
         realm = new RealmHandler(context);
     }
@@ -148,18 +138,32 @@ public class TestManager {
     }
 
     public float getFaster(){
-        return (selectSql+insertSql+updateSql+deleteSql)/(selectRealm+insertRealm+updateRealm+deleteRealm);
+        float fasterS = (float) selectSql / (float) selectRealm;
+        float fasterC = (float) insertSql / (float) insertRealm;
+        float fasterU = (float) updateSql / (float) updateRealm;
+        float fasterD = (float) deleteSql / (float) deleteRealm;
+        return (fasterS + fasterC + fasterU + fasterD) / 4;
+    }
+
+    public String getFasterStr(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        return df.format(getFaster());
     }
 
     public static List<Record> initRecords(){
-        int totalItem = 1000;
+        int totalItem = (int) TEST_NO_TRANS;
         if(DatabaseHandler.hasTransaction){
-            totalItem = 10000;
+            totalItem = (int) TEST_WITH_TRANS;
         }
         List<Record> records = new ArrayList<>();
         for(int i=0;i<totalItem;i++){
             records.add(new Record(i,String.format("record item %d", i)));
         }
         return records;
+    }
+
+    public void onDestroy() {
+        realm.onDestroy();
     }
 }

@@ -2,27 +2,23 @@ package com.oic.test.realm.realm;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.oic.test.realm.model.Record;
-
-import java.util.List;
-
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import java.util.List;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 11/05/2016.
  */
 public class RealmHandler implements IRealmHandler{
 
-    static Realm realm;
+    private Realm realm;
 
-    long startTime = System.currentTimeMillis();
+    private long startTime = System.currentTimeMillis();
 
-    long endTime = System.currentTimeMillis();
+    private long endTime = System.currentTimeMillis();
 
-    Context context;
+    private Context context;
 
     public RealmHandler(Context context){
         this.context = context;
@@ -33,13 +29,9 @@ public class RealmHandler implements IRealmHandler{
         return realm;
     }
 
-    public void initRealm(){
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
-                .name("myrealm.realm")
-                .schemaVersion(1)
-                .build();
-        Realm.setDefaultConfiguration(realmConfig);
-        realm = Realm.getInstance(realmConfig);
+    private void initRealm(){
+        Realm.init(context);
+        realm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -72,8 +64,7 @@ public class RealmHandler implements IRealmHandler{
 
     @Override
     public List<Record> select() {
-        RealmResults<Record> result = realm.where(Record.class).findAll();
-        return result;
+        return realm.where(Record.class).findAll();
     }
 
     @Override
@@ -90,6 +81,11 @@ public class RealmHandler implements IRealmHandler{
     @Override
     public void delete(Record record) {
         Record realmRecord = realm.copyToRealmOrUpdate(record);
-        realmRecord.removeFromRealm();
+        realmRecord.deleteFromRealm();
+    }
+
+    @Override
+    public void onDestroy() {
+        realm.close();
     }
 }
